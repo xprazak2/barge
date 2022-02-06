@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package barge_proto;
+
+service Barge {
+  rpc Join (JoinRequest) returns (JoinResponse) {}
+}
+
+message JoinRequest {
+  int32 port = 1;
+}
+
+message JoinResponse {
+  repeated int32 peers = 1 [packed = true];
+}
