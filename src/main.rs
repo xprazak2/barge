@@ -1,15 +1,15 @@
-pub mod cli;
-pub mod barge;
-pub mod store;
+// pub mod cli;
+// pub mod barge;
+// pub mod store;
 
 use clap::Parser;
-use cli::Cli;
-use store::{Store, StoreMsg};
+use barge::cli::Cli;
+use barge::store::{Store, StoreMsg};
 
-use barge::BargeService;
-use barge::barge_proto::barge_client::BargeClient;
-use barge::barge_proto::barge_server::{BargeServer};
-use barge::barge_proto::JoinRequest;
+use barge::barge::BargeService;
+use barge::barge::barge_proto::barge_client::BargeClient;
+use barge::barge::barge_proto::barge_server::{BargeServer};
+use barge::barge::barge_proto::JoinRequest;
 
 use tonic::{transport::Server};
 

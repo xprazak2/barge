@@ -1,3 +1,5 @@
+pub mod store_client;
+
 use tokio::sync::oneshot;
 
 #[derive(Debug)]
