@@ -8,15 +8,15 @@ pub async fn run(mut rx: Receiver<StoreMsg>) -> () {
         match msg {
             StoreMsg::Add { peer, resp } => {
                 store.add(peer);
-                resp.send(());
+                resp.send(()).expect("error add");
             },
             StoreMsg::List { resp } => {
                 let peers = store.list();
-                resp.send(peers);
+                resp.send(peers).expect("Error list");
             },
             StoreMsg::Remove { peer, resp } => {
                 store.remove(peer);
-                resp.send(());
+                resp.send(()).expect("error remove");
             }
         }
     }

@@ -1,11 +1,7 @@
-// pub mod cli;
-// pub mod barge;
-// pub mod store;
-
 use clap::Parser;
 use barge::cli::Cli;
 use barge::store::{StoreMsg};
-use barge::store::store_server;
+use barge::store::{store_server};
 
 use barge::barge::BargeService;
 use barge::barge::barge_proto::barge_client::BargeClient;
@@ -18,6 +14,8 @@ use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
+
     let args = Cli::parse();
 
     let (tx, rx) = mpsc::channel::<StoreMsg>(10);
@@ -25,7 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = format!("[::1]:{}", args.port).parse()?;
 
     let _store_actor = tokio::spawn(async move {
-        store_server::run(rx)
+        store_server::run(rx).await
     });
 
     if let Some(peer) = args.bootstrap_peer {

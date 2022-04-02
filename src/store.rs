@@ -72,6 +72,6 @@ mod tests {
     assert!(store.list().contains(&16));
     assert!(store.list().len() == 1);
     store.remove(16);
-    assert!(store.list().len() == 0)
+    assert!(store.list().is_empty())
   }
 }
