@@ -1,4 +1,5 @@
 pub mod store_client;
+pub mod store_server;
 
 use tokio::sync::oneshot;
 

@@ -4,7 +4,8 @@
 
 use clap::Parser;
 use barge::cli::Cli;
-use barge::store::{Store, StoreMsg};
+use barge::store::{StoreMsg};
+use barge::store::store_server;
 
 use barge::barge::BargeService;
 use barge::barge::barge_proto::barge_client::BargeClient;
@@ -19,25 +20,12 @@ use tokio::sync::mpsc;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Cli::parse();
 
-    let (tx, mut rx) = mpsc::channel::<StoreMsg>(10);
+    let (tx, rx) = mpsc::channel::<StoreMsg>(10);
     let barge = BargeService::new(tx.clone());
     let addr = format!("[::1]:{}", args.port).parse()?;
 
     let _store_actor = tokio::spawn(async move {
-        let mut store = Store::new();
-
-        while let Some(msg) = rx.recv().await {
-            match msg {
-                StoreMsg::Add { peer, resp } => {
-                    store.add_peer(peer);
-                    resp.send(());
-                },
-                StoreMsg::List { resp } => {
-                    let peers = store.list();
-                    resp.send(peers);
-                }
-            }
-        }
+        store_server::run(rx)
     });
 
     if let Some(peer) = args.bootstrap_peer {
