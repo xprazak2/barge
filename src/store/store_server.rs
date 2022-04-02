@@ -7,12 +7,16 @@ pub async fn run(mut rx: Receiver<StoreMsg>) -> () {
     while let Some(msg) = rx.recv().await {
         match msg {
             StoreMsg::Add { peer, resp } => {
-                store.add_peer(peer);
+                store.add(peer);
                 resp.send(());
             },
             StoreMsg::List { resp } => {
                 let peers = store.list();
                 resp.send(peers);
+            },
+            StoreMsg::Remove { peer, resp } => {
+                store.remove(peer);
+                resp.send(());
             }
         }
     }

@@ -42,3 +42,10 @@ pub async fn add_peer(tx: Sender<StoreMsg>, peer: i32) -> Result<(), StoreError>
   tx.send(add_msg).await?;
   Ok(add_rx.await?)
 }
+
+pub async fn remove_peer(tx: Sender<StoreMsg>, peer: i32) -> Result<(), StoreError> {
+  let (remove_tx, remove_rx) = oneshot::channel();
+  let remove_msg = StoreMsg::Remove { peer, resp: remove_tx };
+  tx.send(remove_msg).await?;
+  Ok(remove_rx.await?)  
+}
