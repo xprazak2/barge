@@ -6,9 +6,7 @@ use tokio::sync::mpsc;
 async fn store_should_work() {
   let (tx, rx) = mpsc::channel::<StoreMsg>(10);
 
-  let _store_actor = tokio::spawn(async move {
-    store_server::run(rx).await
-  });
+  let _store_actor = store_server::start_store(rx);
 
   let empty_res = store_client::list_store(tx.clone()).await.expect("Should show that store is empty");
   assert!(empty_res.is_empty());

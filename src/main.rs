@@ -22,9 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let barge = BargeService::new(tx.clone());
     let addr = format!("[::1]:{}", args.port).parse()?;
 
-    let _store_actor = tokio::spawn(async move {
-        store_server::run(rx).await
-    });
+    let _store_actor = store_server::start_store(rx);
 
     if let Some(peer) = args.bootstrap_peer {
         let mut client = BargeClient::connect(format!("http://[::1]:{}", peer)).await?;
