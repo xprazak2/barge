@@ -2,20 +2,32 @@ pub mod store_client;
 pub mod store_server;
 
 use tokio::sync::oneshot;
+use crate::routes::{Routes, Route};
 
 #[derive(Debug)]
 pub struct Store {
-  peers: Vec<i32>
+  peers: Vec<i32>,
+  routes: Routes,
 }
 
 impl Store {
   pub fn new() -> Self{
-    Self{ peers: vec![] }
+    Self{ peers: vec![], routes: Routes::new() }
   }
 
-  pub fn add(&mut self, peer: i32) {
+  pub fn add_peer(&mut self, peer: i32) {
     if !self.peers.contains(&peer) {
-      self.peers.push(peer)
+      self.peers.push(peer);
+
+      let route = Route::new(peer, 1, peer);
+      self.routes.add(route);
+    }
+  }
+
+  pub fn add_route(&mut self, node: i32, direction: i32, hops: i32) {
+    if let Some(existing) = self.routes.get(&direction) {
+      let route = Route::new(node, existing.hops + hops, direction);
+      self.routes.add(route);
     }
   }
 
@@ -51,16 +63,16 @@ mod tests {
   #[test]
   fn add_should_add_peer() {
     let mut store = Store::new();
-    store.add(16);
+    store.add_peer(16);
     assert!(store.list().contains(&16));
   }
 
   #[test]
   fn add_should_not_add_duplicate_peers() {
     let mut store = Store::new();
-    store.add(16);
-    store.add(16);
-    store.add(16);
+    store.add_peer(16);
+    store.add_peer(16);
+    store.add_peer(16);
     assert!(store.list().contains(&16));
     assert!(store.list().len() == 1);
   }
@@ -68,7 +80,7 @@ mod tests {
   #[test]
   fn remove_should_remove_peer() {
     let mut store = Store::new();
-    store.add(16);
+    store.add_peer(16);
     assert!(store.list().contains(&16));
     assert!(store.list().len() == 1);
     store.remove(16);

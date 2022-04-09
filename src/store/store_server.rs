@@ -8,7 +8,7 @@ pub async fn run(mut rx: Receiver<StoreMsg>) -> () {
         match msg {
             StoreMsg::Add { peer, resp } => {
                 log::info!("Adding peer to store: {}", peer);
-                store.add(peer);
+                store.add_peer(peer);
                 if let Err(_) = resp.send(()) {
                     log::error!("Error sending response when adding peer to store")
                 }
