@@ -14,8 +14,8 @@ pub async fn run(mut rx: Receiver<StoreMsg>) -> () {
                 }
             },
             StoreMsg::List { resp } => {
-                let peers = store.list();
-                if let Err(_) = resp.send(peers) {
+                // let peers = store.list();
+                if let Err(_) = resp.send(store.to_store_data()) {
                     log::error!("Error sending response when listing store")
                 }
             },

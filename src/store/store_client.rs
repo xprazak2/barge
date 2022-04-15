@@ -1,5 +1,5 @@
 use tokio::sync::{mpsc::Sender, oneshot};
-use crate::store::{StoreMsg};
+use crate::store::{StoreMsg, StoreData};
 use tonic::{Status};
 
 #[derive(Debug)]
@@ -29,7 +29,7 @@ impl From<StoreError> for Status {
   }
 }
 
-pub async fn list_store(tx: Sender<StoreMsg>) -> Result<Vec<i32>, StoreError> {
+pub async fn list_store(tx: Sender<StoreMsg>) -> Result<StoreData, StoreError> {
   let (list_tx, list_rx) = oneshot::channel();
   let list_msg = StoreMsg::List { resp: list_tx };
   tx.send(list_msg).await?;

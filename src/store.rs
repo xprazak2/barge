@@ -10,6 +10,13 @@ pub struct Store {
   routes: Routes,
 }
 
+#[derive(Debug, Clone)]
+pub struct StoreData {
+  pub peers: Vec<i32>,
+  pub routes: Routes,
+}
+
+
 impl Store {
   pub fn new() -> Self{
     Self{ peers: vec![], routes: Routes::new() }
@@ -36,6 +43,10 @@ impl Store {
     self.peers.clone()
   }
 
+  pub fn to_store_data(&self) -> StoreData {
+    StoreData { peers: self.peers.clone(), routes: self.routes.clone() }
+  }
+
   pub fn remove(&mut self, peer: i32) {
     self.peers.retain(|&item| item != peer)
   }
@@ -48,7 +59,7 @@ pub enum StoreMsg {
     resp: oneshot::Sender<()>,
   },
   List {
-    resp: oneshot::Sender<Vec<i32>>
+    resp: oneshot::Sender<StoreData>
   },
   Remove {
     peer: i32,

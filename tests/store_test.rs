@@ -9,14 +9,14 @@ async fn store_should_work() {
   let _store_actor = store_server::start_store(rx);
 
   let empty_res = store_client::list_store(tx.clone()).await.expect("Should show that store is empty");
-  assert!(empty_res.is_empty());
+  assert!(empty_res.peers.is_empty());
 
   store_client::add_peer(tx.clone(), 42).await.expect("Should add peer to store");
   let store_res = store_client::list_store(tx.clone()).await.expect("Should show that store has one peer");
-  assert_eq!(store_res.len(), 1);
-  assert_eq!(store_res[0], 42);
+  assert_eq!(store_res.peers.len(), 1);
+  assert_eq!(store_res.peers[0], 42);
 
   store_client::remove_peer(tx.clone(), 42).await.expect("Should remove peer from store");
   let empty_res = store_client::list_store(tx).await.expect("Should show that store is empty again");
-  assert!(empty_res.is_empty());
+  assert!(empty_res.peers.is_empty());
 }
