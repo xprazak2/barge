@@ -31,9 +31,17 @@ impl Store {
     }
   }
 
-  pub fn add_route(&mut self, node: i32, direction: i32, hops: i32) {
-    if let Some(existing) = self.routes.get(&direction) {
-      let route = Route::new(node, existing.hops + hops, direction);
+  // pub fn add_route(&mut self, node: i32, direction: i32, hops: i32) {
+  //   if let Some(existing) = self.routes.get(&direction) {
+  //     let route = Route::new(node, existing.hops + hops, direction);
+  //     self.routes.add(route);
+  //   }
+  // }
+
+  pub fn add_routes(&mut self, peer: i32, routes: Vec<Route>) {
+    for mut route in routes {
+      route.hops += 1;
+      route.direction = peer;
       self.routes.add(route);
     }
   }
@@ -54,7 +62,7 @@ impl Store {
 
 #[derive(Debug)]
 pub enum StoreMsg {
-  Add {
+  AddPeer {
     peer: i32,
     resp: oneshot::Sender<()>,
   },
@@ -63,6 +71,11 @@ pub enum StoreMsg {
   },
   Remove {
     peer: i32,
+    resp: oneshot::Sender<()>
+  },
+  AddRoutes {
+    peer: i32,
+    routes: Vec<Route>,
     resp: oneshot::Sender<()>
   }
 }

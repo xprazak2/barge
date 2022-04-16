@@ -1,7 +1,9 @@
 use clap::Parser;
 use barge::cli::Cli;
 use barge::store::{StoreMsg};
-use barge::store::{store_server};
+use barge::store::{store_server, store_client};
+
+use barge::routes;
 
 use barge::barge::BargeService;
 use barge::barge::barge_proto::barge_client::BargeClient;
@@ -31,6 +33,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let response = client.join(request).await?;
 
         println!("RESPONSE={:?}", response);
+        let routes = response.into_inner().routes.into_iter().map(|br| routes::Route::from(br)).collect();
+        store_client::add_routes(tx.clone(), routes, peer).await?;
     }
 
     Server::builder().add_service(BargeServer::new(barge)).serve(addr).await?;

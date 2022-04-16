@@ -14,7 +14,7 @@ pub mod barge_proto {
     tonic::include_proto!("barge_proto");
 }
 
-impl From<routes::Route> for barge_proto::Route {
+  impl From<routes::Route> for barge_proto::Route {
   fn from(item: routes::Route) -> Self {
     Self { node_name: item.node_name, hops: item.hops, direction: item.direction}
   }

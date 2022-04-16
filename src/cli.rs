@@ -6,5 +6,5 @@ pub struct Cli {
   pub port: i32,
 
   #[clap(short, long)]
-  pub bootstrap_peer: Option<String>,
+  pub bootstrap_peer: Option<i32>,
 }

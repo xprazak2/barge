@@ -6,7 +6,7 @@ pub async fn run(mut rx: Receiver<StoreMsg>) -> () {
 
     while let Some(msg) = rx.recv().await {
         match msg {
-            StoreMsg::Add { peer, resp } => {
+            StoreMsg::AddPeer { peer, resp } => {
                 log::info!("Adding peer to store: {}", peer);
                 store.add_peer(peer);
                 if let Err(_) = resp.send(()) {
@@ -25,6 +25,14 @@ pub async fn run(mut rx: Receiver<StoreMsg>) -> () {
                 if let Err(_) = resp.send(()) {
                     log::error!("Error sending response when removing peer from store")
                 }
+            },
+            StoreMsg::AddRoutes { peer, routes, resp } => {
+                log::info!("Adding new routes via peer: {}", peer);
+                store.add_routes(peer, routes);
+                if let Err(_) = resp.send(()) {
+                    log::error!("Error sending response when adding routes to store")
+                }
+
             }
         }
     }

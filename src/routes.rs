@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use crate::barge::barge_proto;
+
 #[derive(Debug, Clone)]
 pub struct Routes {
     table: HashMap<i32, Route>,
@@ -37,5 +39,11 @@ impl Routes {
 impl Route {
     pub fn new(node_name: i32, hops: i32, direction: i32) -> Self {
         Self{ node_name, hops, direction }
+    }
+}
+
+impl From<barge_proto::Route> for Route {
+    fn from(item: barge_proto::Route) -> Self {
+        Self { hops: item.hops, node_name: item.node_name, direction: item.direction }
     }
 }
