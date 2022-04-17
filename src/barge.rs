@@ -1,6 +1,6 @@
 use tonic::{Request, Response, Status};
 
-use barge_proto::{JoinRequest, JoinResponse};
+use barge_proto::{JoinRequest, JoinResponse, HeartbeatRequest, HeartbeatResponse};
 use barge_proto::barge_server::{Barge};
 
 use tokio::sync::{mpsc::Sender};
@@ -33,7 +33,6 @@ impl BargeService {
 
 #[tonic::async_trait]
 impl Barge for BargeService {
-
   async fn join(&self, request: Request<JoinRequest>) -> Result<Response<JoinResponse>, Status> {
     println!("Got a request from {:?}", request.remote_addr());
     let data = store_client::list_store(self.tx.clone()).await?;
@@ -41,6 +40,15 @@ impl Barge for BargeService {
 
     let reply = barge_proto::JoinResponse {
       peers: data.peers,
+      routes: data.routes.list().into_iter().map(|route| barge_proto::Route::from(route)).collect()
+    };
+    Ok(Response::new(reply))
+  }
+
+  async fn heartbeat(&self, _request: Request<HeartbeatRequest>) -> Result<Response<HeartbeatResponse>, Status> {
+    let data = store_client::list_store(self.tx.clone()).await?;
+    
+    let reply = barge_proto::HeartbeatResponse {
       routes: data.routes.list().into_iter().map(|route| barge_proto::Route::from(route)).collect()
     };
     Ok(Response::new(reply))

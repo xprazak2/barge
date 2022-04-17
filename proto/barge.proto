@@ -4,6 +4,7 @@ package barge_proto;
 
 service Barge {
   rpc Join (JoinRequest) returns (JoinResponse) {}
+  rpc Heartbeat (HeartbeatRequest) returns (HeartbeatResponse) {}
 }
 
 message Route {
@@ -19,4 +20,10 @@ message JoinRequest {
 message JoinResponse {
   repeated int32 peers = 1 [packed = true];
   repeated Route routes = 2;
+}
+
+message HeartbeatRequest {}
+
+message HeartbeatResponse {
+  repeated Route routes = 1;
 }

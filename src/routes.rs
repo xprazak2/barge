@@ -7,7 +7,7 @@ pub struct Routes {
     table: HashMap<i32, Route>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Route {
     pub hops: i32,
     pub node_name: i32,

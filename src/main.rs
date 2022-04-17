@@ -3,12 +3,13 @@ use barge::cli::Cli;
 use barge::store::{StoreMsg};
 use barge::store::{store_server, store_client};
 
-use barge::routes;
+use barge::sync;
+use barge::helper;
 
 use barge::barge::BargeService;
 use barge::barge::barge_proto::barge_client::BargeClient;
 use barge::barge::barge_proto::barge_server::{BargeServer};
-use barge::barge::barge_proto::JoinRequest;
+use barge::barge::barge_proto::{JoinRequest};
 
 use tonic::{transport::Server};
 
@@ -32,10 +33,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let request = tonic::Request::new(JoinRequest { port: args.port });
         let response = client.join(request).await?;
 
-        println!("RESPONSE={:?}", response);
-        let routes = response.into_inner().routes.into_iter().map(|br| routes::Route::from(br)).collect();
-        store_client::add_routes(tx.clone(), routes, peer).await?;
+        let routes = helper::routes_from_proto(response.into_inner().routes);
+        store_client::on_bootstrap(tx.clone(), routes, peer).await?;
     }
+
+    let _sync_actor = sync::start_sync(tx.clone(), args.interval);
 
     Server::builder().add_service(BargeServer::new(barge)).serve(addr).await?;
 

@@ -60,9 +60,16 @@ pub async fn remove_peer(tx: Sender<StoreMsg>, peer: i32) -> Result<(), StoreErr
   Ok(remove_rx.await?)  
 }
 
-pub async fn add_routes(tx: Sender<StoreMsg>, routes: Vec<Route>, peer: i32) -> Result<(), StoreError> {
+pub async fn on_bootstrap(tx: Sender<StoreMsg>, routes: Vec<Route>, peer: i32) -> Result<(), StoreError> {
   let (add_tx, add_rx) = oneshot::channel();
-  let add_msg = StoreMsg::AddRoutes { peer, routes, resp: add_tx };
+  let add_msg = StoreMsg::OnBootstrap { peer, routes, resp: add_tx };
+  tx.send(add_msg).await?;
+  Ok(add_rx.await?)
+}
+
+pub async fn on_heartbeat(tx: Sender<StoreMsg>, routes: Vec<Route>, peer: i32) -> Result<(), StoreError> {
+  let (add_tx, add_rx) = oneshot::channel();
+  let add_msg = StoreMsg::OnHeartbeat { peer, routes, resp: add_tx };
   tx.send(add_msg).await?;
   Ok(add_rx.await?)
 }

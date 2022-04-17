@@ -14,7 +14,6 @@ pub async fn run(mut rx: Receiver<StoreMsg>) -> () {
                 }
             },
             StoreMsg::List { resp } => {
-                // let peers = store.list();
                 if let Err(_) = resp.send(store.to_store_data()) {
                     log::error!("Error sending response when listing store")
                 }
@@ -26,19 +25,28 @@ pub async fn run(mut rx: Receiver<StoreMsg>) -> () {
                     log::error!("Error sending response when removing peer from store")
                 }
             },
-            StoreMsg::AddRoutes { peer, routes, resp } => {
+            StoreMsg::OnBootstrap { peer, routes, resp } => {
                 log::info!("Adding new routes via peer: {}", peer);
                 store.add_routes(peer, routes);
                 if let Err(_) = resp.send(()) {
                     log::error!("Error sending response when adding routes to store")
                 }
 
-            }
+            },
+            StoreMsg::OnHeartbeat { peer, routes, resp } => {
+                log::info!("Heartbeat, peer: {}", peer);
+                store.add_routes(peer, routes);
+                log::debug!("Store state: {:?}", store.to_store_data());
+                if let Err(_) = resp.send(()) {
+                    log::error!("Error sending response on heartbeat")
+                }
+
+            },
         }
     }
 }
 
-pub fn start_store(rx: Receiver<StoreMsg>)-> JoinHandle<()> {
+pub fn start_store(rx: Receiver<StoreMsg>) -> JoinHandle<()> {
     tokio::spawn(async move {
         run(rx).await
     })
