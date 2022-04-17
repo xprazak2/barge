@@ -1,17 +1,17 @@
-use clap::Parser;
 use barge::cli::Cli;
-use barge::store::{StoreMsg};
-use barge::store::{store_server, store_client};
+use barge::store::StoreMsg;
+use barge::store::{store_client, store_server};
+use clap::Parser;
 
-use barge::sync;
 use barge::helper;
+use barge::sync;
 
-use barge::barge::BargeService;
 use barge::barge::barge_proto::barge_client::BargeClient;
-use barge::barge::barge_proto::barge_server::{BargeServer};
-use barge::barge::barge_proto::{JoinRequest};
+use barge::barge::barge_proto::barge_server::BargeServer;
+use barge::barge::barge_proto::JoinRequest;
+use barge::barge::BargeService;
 
-use tonic::{transport::Server};
+use tonic::transport::Server;
 
 use tokio::sync::mpsc;
 
@@ -39,7 +39,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let _sync_actor = sync::start_sync(tx.clone(), args.interval);
 
-    Server::builder().add_service(BargeServer::new(barge)).serve(addr).await?;
+    Server::builder()
+        .add_service(BargeServer::new(barge))
+        .serve(addr)
+        .await?;
 
     Ok(())
 }

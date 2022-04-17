@@ -16,14 +16,16 @@ pub struct Route {
 
 impl Routes {
     pub fn new() -> Self {
-        Self{ table: HashMap::new() }
+        Self {
+            table: HashMap::new(),
+        }
     }
 
-    pub fn add(&mut self, route: Route) -> Option<Route>{
+    pub fn add(&mut self, route: Route) -> Option<Route> {
         self.table.insert(route.node_name, route)
     }
 
-    pub fn remove(&mut self, key: &i32) -> Option<Route>{
+    pub fn remove(&mut self, key: &i32) -> Option<Route> {
         self.table.remove(key)
     }
 
@@ -38,12 +40,20 @@ impl Routes {
 
 impl Route {
     pub fn new(node_name: i32, hops: i32, direction: i32) -> Self {
-        Self{ node_name, hops, direction }
+        Self {
+            node_name,
+            hops,
+            direction,
+        }
     }
 }
 
 impl From<barge_proto::Route> for Route {
     fn from(item: barge_proto::Route) -> Self {
-        Self { hops: item.hops, node_name: item.node_name, direction: item.direction }
+        Self {
+            hops: item.hops,
+            node_name: item.node_name,
+            direction: item.direction,
+        }
     }
 }
